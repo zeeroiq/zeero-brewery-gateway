@@ -5,7 +5,7 @@ spring:
     name: gateway
   # port configuration to zipkin
   zipkin:
-    baseUrl: http://localhost:9411/
+    enabled: false
 
 eureka:
   client:
