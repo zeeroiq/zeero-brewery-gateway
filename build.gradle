@@ -2,6 +2,7 @@ plugins {
     id 'org.springframework.boot' version '2.3.4.RELEASE'
     id 'io.spring.dependency-management' version '1.0.10.RELEASE'
     id 'java'
+    id 'com.palantir.docker' version '0.25.0'
 }
 
 group = 'com.shri.brewery'
@@ -25,6 +26,25 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+}
+
+
+// configuration of docker task
+apply plugin: 'com.palantir.docker'
+bootJar {
+    layered {
+        enabled = true
+        includeLayerTools = true
+    }
+}
+docker {
+    name "${project.name}:${project.version}"
+    tag project.name, project.version as String
+    dockerfile file('src/main/docker/Dockerfile')
+    files "build/libs/${bootJar.archiveFileName.get()}"
+    buildArgs([JAR_FILE: bootJar.archiveFileName.get()] as Map<String, String>)
+    labels(['project':project.name])
+    noCache true
 }
 
 dependencyManagement {
